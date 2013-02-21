@@ -208,7 +208,7 @@ abstract class HttpConnection {
    *   * $return['headers'] = The HTTP headers of the reply
    *   * $return['content'] = The body of the HTTP reply
    */
-  abstract public function getRequest($url, $headers_only = FALSE, $file = FALSE);
+  abstract public function getRequest($url, $headers_only = FALSE, $file = FALSE, $content_type="text/xml");
 
   /**
    * Send a HTTP PUT request to URL.
@@ -607,7 +607,7 @@ class CurlConnection extends HttpConnection {
   /**
    * @see HttpConnection::getRequest
    */
-  function getRequest($url, $headers_only = FALSE, $file = NULL) {
+  function getRequest($url, $headers_only = FALSE, $file = NULL, $content_type="text/xml") {
     $this->setupCurlContext($url);
 
     if ($headers_only) {
@@ -624,6 +624,9 @@ class CurlConnection extends HttpConnection {
       curl_setopt(self::$curlContext, CURLOPT_HEADER, FALSE);
     }
 
+    $headers = array("Accept: $content_type");
+    curl_setopt(self::$curlContext, CURLOPT_HTTPHEADER, $headers);
+
     // Ugly substitute for a try catch finally block.
     $exception = NULL;
     try {
@@ -636,6 +639,7 @@ class CurlConnection extends HttpConnection {
       curl_setopt(self::$curlContext, CURLOPT_HTTPGET, FALSE);
       curl_setopt(self::$curlContext, CURLOPT_NOBODY, FALSE);
       curl_setopt(self::$curlContext, CURLOPT_HEADER, FALSE);
+      curl_setopt(self::$curlContext, CURLOPT_HTTPHEADER, array());
     }
     else {
       $this->unallocateCurlContext();
