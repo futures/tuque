@@ -677,7 +677,8 @@ class FedoraApiM {
     $this->connection->addParamArray($request, $seperator, $params, 'logMessage');
 
     $response = $this->connection->postRequest($request, $type, $file);
-    $response = $this->serializer->addDatastream($response);
+    //pp changed this as it was expecting xml but we have an array
+    //$response = $this->serializer->addDatastream($response);
     return $response;
   }
 
@@ -1292,7 +1293,7 @@ class FedoraApiM {
 
     $this->connection->addParam($request, $seperator, 'logMessage', $log_message);
     $response = $this->connection->deleteRequest($request);
-    $response = $this->serializer->purgeObject($response);
+    //$response = $this->serializer->purgeObject($response);
     return $response;
   }
 

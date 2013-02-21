@@ -167,8 +167,10 @@ class FedoraRepository extends AbstractRepository {
 
     // copy object level properties to the new object
     $fedora_object->state = $object->state;
-    $fedora_object->owner = $object->owner;
-    $fedora_object->models = $object->models;
+    //pp changed the below as they crashed on fcrepo4 always had two models only fedora:object and fedora:owned
+    //$fedora_object->owner = $object->owner;
+    //$fedora_object->models = $object->models;
+
 
     // now we have an empty fedora object with pid=$id
     foreach ($object as $ds) {
@@ -244,5 +246,7 @@ class FedoraRepository extends AbstractRepository {
       // @todo chain exceptions here.
       throw $e;
     }
+    //pp changed this return success
+    return TRUE;
   }
 }
