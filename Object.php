@@ -223,7 +223,7 @@ abstract class AbstractFedoraObject extends AbstractObject {
   public function __construct($id, FedoraRepository $repository) {
     parent::__construct();
     $this->repository = $repository;
-    $this->objectId = str_replace(":", "_", $id);
+    $this->objectId = $id; //str_replace(":", "_", $id);
     $this->relationships = new FedoraRelsExt($this);
   }
 
