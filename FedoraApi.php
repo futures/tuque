@@ -248,7 +248,7 @@ class FedoraApiA {
     }
 
     $response = $this->connection->getRequest($request);
-    $response = $this->serializer->findObjects($response);
+    //$response = $this->serializer->findObjects($response);
     return $response;
   }
 
@@ -1102,7 +1102,7 @@ class FedoraApiM {
     $this->connection->addParamArray($request, $seperator, $params, 'logMessage');
 
     $response = $this->connection->postRequest($request, $type, $data, $content_type);
-    $response = $this->serializer->ingest($response);
+    //$response = $this->serializer->ingest($response);
     return $response;
   }
 
