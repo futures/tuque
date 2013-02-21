@@ -1352,4 +1352,22 @@ class FedoraApiM {
     $response = $this->serializer->upload($response);
     return $response;
   }
+
+  public function registerNamespace($prefix, $uri) {
+    $prefix = urlencode($prefix);
+    $uri = urlencode($uri);
+
+    $request = "/namespaces/$prefix";
+
+    $response = $this->connection->postRequest($request, 'string', "--data-ascii $uri");
+    return $response;
+  }
+
+  public function getRegisteredNamespaces() {
+    $request = "/namespaces";
+
+    $response = $this->connection->getRequest($request);
+    return $response['content'];
+  }
+
 }
