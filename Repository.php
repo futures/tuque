@@ -237,7 +237,7 @@ class FedoraRepository extends AbstractRepository {
       $this->api->m->purgeObject($id);
       $object = $this->cache->get($id);
       if ($object !== FALSE) {
-        $this->cache->delete($id);
+        return $this->cache->delete($id);;
       }
     }
     catch (RepositoryException $e) {
