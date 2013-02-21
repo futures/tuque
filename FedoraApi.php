@@ -1359,7 +1359,7 @@ class FedoraApiM {
 
     $request = "/namespaces/$prefix";
 
-    $response = $this->connection->postRequest($request, 'string', "--data-ascii $uri");
+    $response = $this->connection->postRequest($request, 'string', $uri);
     return $response;
   }
 
