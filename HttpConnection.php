@@ -208,7 +208,7 @@ abstract class HttpConnection {
    *   * $return['headers'] = The HTTP headers of the reply
    *   * $return['content'] = The body of the HTTP reply
    */
-  abstract public function getRequest($url, $headers_only = FALSE, $file = FALSE);
+  abstract public function getRequest($url, $headers_only = FALSE, $file = FALSE, $content_type="text/xml");
 
   /**
    * Send a HTTP PUT request to URL.
@@ -624,7 +624,7 @@ class CurlConnection extends HttpConnection {
       curl_setopt(self::$curlContext, CURLOPT_HEADER, FALSE);
     }
 
-    $headers = array("Content-Type: $content_type");
+    $headers = array("Accept: $content_type");
     curl_setopt(self::$curlContext, CURLOPT_HTTPHEADER, $headers);
 
     // Ugly substitute for a try catch finally block.

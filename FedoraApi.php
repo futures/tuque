@@ -1366,7 +1366,7 @@ class FedoraApiM {
   public function getRegisteredNamespaces() {
     $request = "/namespaces";
 
-    $response = $this->connection->getRequest($request);
+    $response = $this->connection->getRequest($request, false, NULL, "application/json");
     return $response['content'];
   }
 
