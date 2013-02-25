@@ -221,7 +221,8 @@ class FedoraApiSerializer {
     $result = array();
     $datastreams = $this->loadSimpleXml($request['content']);
     // We can't use flattenDocument here, since everything is an attribute.
-    foreach ($datastreams->datastream as $datastream) {
+    //pp changed fcrepo4 may have a bug in legacy api 
+    foreach ($datastreams->datastreams as $datastream) {
       $result[(string) $datastream['dsid']] = array(
         'label' => (string) $datastream['label'],
         'mimetype' => (string) $datastream['mimeType'],

@@ -169,9 +169,10 @@ class RepositoryConnection extends CurlConnection implements RepositoryConfigInt
   /**
    * @see CurlConnection::putRequest()
    */
-  public function putRequest($url, $type = 'none', $file = NULL) {
+  public function putRequest($url, $type = 'none', $file = NULL, $content_type = NULL) {
     try {
-      return parent::putRequest($this->buildUrl($url), $type, $file);
+      //pp changed
+      return parent::putRequest($this->buildUrl($url), $type, $file, $content_type);
     }
     catch (HttpConnectionException $e) {
       $this->parseFedoraExceptions($e);
@@ -200,7 +201,7 @@ class RepositoryConnection extends CurlConnection implements RepositoryConfigInt
    */
   protected function parseFedoraExceptions($e) {
     $code = $e->getCode();
-    switch ($code) {
+    /*switch ($code) {
       case '400':
         // When setting an error 400 often Fedora puts useful error messages
         // in the message body, we might as well expose them.
@@ -217,13 +218,15 @@ class RepositoryConnection extends CurlConnection implements RepositoryConfigInt
         // the message set in that exception .
         $response = $e->getResponse();
         $message = preg_split('/$\R?^/m', $response['content']);
-        $message = $message[0];
+        //$message = $message[0];
+        $message = $e->getMessage();
         break;
 
       default:
         $message = $e->getMessage();
         break;
-    }
+    }*/
+    $message = $e->getMessage();
     throw new RepositoryException($message, $code, $e);
   }
 }

@@ -312,7 +312,13 @@ abstract class AbstractFedoraObject extends AbstractObject {
   protected function labelMagicProperty($function, $value) {
     switch ($function) {
       case 'get':
-        return $this->objectProfile['objLabel'];
+        //pp changed for fcrepo4 as the label does not seem to get populated on ingest
+        if(isset($this->objectProfile['objLabel'])){
+          return $this->objectProfile['objLabel'];
+        } else {
+          return 'no label';
+        }
+        
         break;
 
       case 'isset':

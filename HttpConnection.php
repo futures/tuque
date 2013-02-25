@@ -544,8 +544,12 @@ class CurlConnection extends HttpConnection {
   /**
    * @see HttpConnection::putRequest
    */
-  function putRequest($url, $type = 'none', $file = NULL) {
+  function putRequest($url, $type = 'none', $file = NULL, $content_type = NULL) {
     $this->setupCurlContext($url);
+    if(isset($content_type)){
+      $headers = array("Content-Type: $content_type");
+      curl_setopt(self::$curlContext, CURLOPT_HTTPHEADER, $headers);
+    }
     curl_setopt(self::$curlContext, CURLOPT_CUSTOMREQUEST, 'PUT');
     switch (strtolower($type)) {
       case 'string':
@@ -559,8 +563,12 @@ class CurlConnection extends HttpConnection {
         break;
 
       case 'file':
-        $fh = fopen($file, 'r');
+        //pp added clearstatcache had instances where i had an error and then
+        //the files came back as 0 length as that is what was cached.  should
+        //undo this for production
+        clearstatcache();
         $size = filesize($file);
+        $fh = fopen($file, 'r');        
         curl_setopt(self::$curlContext, CURLOPT_PUT, TRUE);
         curl_setopt(self::$curlContext, CURLOPT_INFILE, $fh);
         curl_setopt(self::$curlContext, CURLOPT_INFILESIZE, $size);

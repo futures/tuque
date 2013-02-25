@@ -388,7 +388,12 @@ abstract class AbstractFedoraDatastream extends AbstractDatastream {
   protected function controlGroupMagicProperty($function, $value) {
     switch ($function) {
       case 'get':
-        return $this->datastreamInfo['dsControlGroup'];
+        //pp changed for fcrepo4
+        if(isset($this->datastreamInfo['dsControlGroup'])){
+          return $this->datastreamInfo['dsControlGroup'];
+        } else {
+           return 'no control group set';
+        }
         break;
 
       case 'isset':
@@ -1210,8 +1215,14 @@ class FedoraDatastream extends AbstractExistingFedoraDatastream implements Count
    * This function uses datastream history to populate datastream info.
    */
   protected function populateDatastreamInfo() {
+    //pp changed this
     $this->datastreamHistory = $this->getDatastreamHistory();
-    $this->datastreamInfo = $this->datastreamHistory[0];
+    if(isset($this->datastreamHistory[0])){
+        $this->datastreamInfo = $this->datastreamHistory[0];
+    }
+    else {
+      return array();
+    }
   }
 
   /**
@@ -1513,10 +1524,12 @@ class FedoraDatastream extends AbstractExistingFedoraDatastream implements Count
   protected function createdDateMagicProperty($function, $value) {
     switch ($function) {
       case 'get':
+        //pp changed for fcrepo4
         if (!isset($this->datastreamInfo['dsCreateDate'])) {
           $this->populateDatastreamInfo();
+          return new FedoraDate($this->datastreamInfo['dsCreateDate']);
         }
-        return new FedoraDate($this->datastreamInfo['dsCreateDate']);
+        return NULL;
         break;
 
       case 'isset':
