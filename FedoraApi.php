@@ -1357,11 +1357,16 @@ class FedoraApiM {
 
   public function registerNamespace($prefix, $uri) {
     $prefix = urlencode($prefix);
-    $uri = urlencode($uri);
 
     $request = "/namespaces/$prefix";
 
-    $response = $this->connection->postRequest($request, 'string', $uri);
+    try {
+      $response = $this->connection->postRequest($request, 'string', $uri);
+    }
+    catch (RepositoryException $e) {
+      // error
+      return NULL;
+    }
     return $response;
   }
 
