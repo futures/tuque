@@ -675,8 +675,9 @@ class FedoraApiM {
     $this->connection->addParamArray($request, $seperator, $params, 'checksum');
     $this->connection->addParamArray($request, $seperator, $params, 'mimeType');
     $this->connection->addParamArray($request, $seperator, $params, 'logMessage');
-
-    $response = $this->connection->postRequest($request, $type, $file);
+     //pp changed this was a post
+    $response = $this->connection->putRequest($request, $type, $file, $params['mimeType']);
+    
     //pp changed this as it was expecting xml but we have an array
     //$response = $this->serializer->addDatastream($response);
     return $response;
