@@ -918,7 +918,7 @@ class FedoraApiM {
    *
    */
   public function getNextPid($namespace = NULL, $numpids = NULL) {
-    $request = "/objects/nextPID";
+    $request = "/nextPID";
     $seperator = '?';
 
     $this->connection->addParam($request, $seperator, 'format', 'xml');
