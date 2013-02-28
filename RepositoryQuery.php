@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * This file provides some methods for doing RDF queries.
@@ -6,7 +7,6 @@
  * The essance of this file was taken from some commits that Adam Vessy made to
  * Islandora 6.x, so I'd like to give him some credit here.
  */
-
 class RepositoryQuery {
 
   public $connection;
@@ -85,6 +85,9 @@ class RepositoryQuery {
    */
   function query($query, $type = 'itql', $limit = -1) {
     // Construct the query URL.
+    if ($type == 'SQL2') {
+      return $this->sql2Query($query, $limit);
+    }
     $url = '/risearch';
     $seperator = '?';
 
@@ -98,11 +101,68 @@ class RepositoryQuery {
     if ($limit > 0) {
       $this->connection->addParam($url, $seperator, 'limit', $limit);
     }
-    
+
     $result = $this->connection->getRequest($url);
 
     // Pass the query's results off to a decent parser.
     return self::parseSparqlResults($result['content']);
+  }
+
+  /**
+   * 
+   * @param string $query
+   *   a SQL2 query string
+   * @param int $limit
+   *   limit to this int, not currently implemented
+   * @return array
+   * @throws Exception
+   */
+  function sql2Query($query, $limit) {
+    //TODO: fix this as we are making some assumptions here
+    $url = '/modeshape/repo/fedora/query';
+    $result = $this->connection->postRequest($url, 'string', $query, 'application/jcr+sql2');
+    if ($result['status'] == '200') {
+      return $this->parseSql2results($result);
+    }
+    else
+      throw new Exception(t('Error running sql2 query %query', array('%query' => $query)));
+  }
+
+  /**
+   * SQL2 is only available on FCREPO4 and higher
+   * This implementation is currently a hack for integration with FCREPO4, which
+   * at the time this was written didn't have a concept of relationships etc.
+   * 
+   * We also need to figure out a way to map jcr properties to names we expect
+   * in the theme layer as it assumes the array will have an object and title keys.
+   *
+   * @param type $sql2Results
+   *   the results of an SQL2 query 
+   * @return string
+   */
+  function parseSql2Results($sql2Results) {
+    $result_object = json_decode($sql2Results['content']);
+    $results = array();
+    // Build the results.
+    foreach ($result_object->rows as $result) {
+      // Built a single result.
+      $r = array();
+
+      $val = array();      
+        $column = 'jcr:name';
+        $val['value'] = $result->$column;
+        $val['uri'] = $result->$column;
+        $val['type'] = 'pid';    
+      
+
+      // Map the name to the value in the array.
+      $r['object'] = $val;
+      $r['title']  = array('type' => 'literal','value'=>'no label');
+      $r['content']  = array('type' => 'literal','value'=>'this should be the cmodel');
+      // Add the single result to the set to return.
+      $results[] = $r;
+    }
+    return $results;
   }
 
   /**
@@ -147,4 +207,5 @@ class RepositoryQuery {
       return $uri;
     }
   }
+
 }
