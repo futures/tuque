@@ -682,6 +682,36 @@ class FedoraApiM {
     //$response = $this->serializer->addDatastream($response);
     return $response;
   }
+  
+  
+  /**
+   * FCREPO 4 has an addDatastreams end point where we can send multiple datastreams 
+   * as part of a multi part POST request.  If any one of the datastreams cannot be 
+   * added none of them will be added.
+   * 
+   * 
+   * @param array $datastreams
+   *   the datastreams to add
+   */
+  public function addDatastreams($pid, $datastreams){
+    $request = "/objects/$pid/datastreams"; 
+    $data = array();   
+    $files = array();
+    foreach($datastreams as $datastream){
+      //$data_array = array();
+       if ($datastream->controlGroup == 'M' ) {  
+         $files[] = $datastream->content;
+         $data[ $datastream->id] =  '@' . $datastream->content ;
+       } else {
+         $data[ $datastream->id] =  $datastream->content ;  
+       }
+      //$data[ $datastream->id] = $data_array;
+    }
+    $response = $this->connection->postRequest($request, 'datastreams', $data);
+    foreach($files as $file){
+      unlink($file);
+    }
+  }
 
   /**
    * Add a RDF relationship to a Fedora object.

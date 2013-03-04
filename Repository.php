@@ -170,8 +170,9 @@ class FedoraRepository extends AbstractRepository {
     //pp changed the below as they crashed on fcrepo4 always had two models only fedora:object and fedora:owned
     //$fedora_object->owner = $object->owner;
     //$fedora_object->models = $object->models;
-
-
+    $info = $this->api->a->describeRepository();
+    
+    $datastreams = array();
     // now we have an empty fedora object with pid=$id
     foreach ($object as $ds) {
       // create the empty datastream that we will populate
@@ -190,21 +191,33 @@ class FedoraRepository extends AbstractRepository {
       //$dstream->content = $ds->content; // this is probably wrong, so lets skip it
 
       // now fetch the content depending on the controlGroup of the original datastream
-      if ($ds->controlGroup == 'M' || $ds->controlGroup == 'X') {
+      if ($ds->controlGroup == 'X'  ) {
         // load the original file
         $file = tempnam(sys_get_temp_dir(), 'tuque');
         $ds->getContent($file);
         $dstream->setContentFromFile($file); // and place it in the new datastream
         unlink($file);
-      }
+      } 
+      else if ($ds->controlGroup == 'M'){
+        $file = tempnam(sys_get_temp_dir(), 'tuque');
+        $ds->getContent($file);
+        $dstream->content = $file;
+        //we will unlink the file when after we call addDatastreams
+      }      
       else if ($ds->controlGroup == 'E' || $ds->controlGroup == 'R') {
         $dstream->url = $ds->url;
       }
-
-      // attach the datastream to the object
-      $fedora_object->ingestDatastream($dstream);
+      if($info['repositoryVersion'] < 4.0){
+       //attach the datastream to the object
+        $fedora_object->ingestDatastream($dstream);
+      } else {            
+        $datastreams["$ds->id"] = $dstream;     
+      }
+      
     }
-
+    if($info['repositoryVersion'] >= 4.0){
+      $response = $this->api->m->addDatastreams($id, $datastreams);
+    }
     $object = $fedora_object;
     $this->cache->set($id, $object);
     return $object;

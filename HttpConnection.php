@@ -509,6 +509,10 @@ class CurlConnection extends HttpConnection {
           curl_setopt(self::$curlContext, CURLOPT_POSTFIELDS, array('file' => "@$data"));
         }
         break;
+        
+        case 'datastreams':
+          curl_setopt(self::$curlContext, CURLOPT_POSTFIELDS, $data);       
+        break;
 
       case 'none':
         curl_setopt(self::$curlContext, CURLOPT_POSTFIELDS, array());
