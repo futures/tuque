@@ -152,6 +152,10 @@ class FedoraApiSerializer {
     $data = $this->flattenDocument($repository);
     return $data;
   }
+  
+  public function getEventsFeed($request){
+    return $request['content'];
+  }
 
   /**
    * Serializes the data returned in FedoraApiA::findObjects()

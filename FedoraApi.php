@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * The RAW API wrappers for the Fedora interface.
@@ -8,7 +9,6 @@
  * SOAP interface. If there are version specific modifications to be made for
  * Fedora, this is the place to make them.
  */
-
 require_once 'RepositoryException.php';
 require_once 'RepositoryConnection.php';
 
@@ -28,7 +28,6 @@ class FedoraApi {
    * @var FedoraApiM
    */
   public $m;
-
   public $connection;
 
   /**
@@ -39,7 +38,7 @@ class FedoraApi {
    * @param FedoraApiSerializer $serializer
    *   (Optional) If one isn't provided a default will be used.
    */
-  public function  __construct(RepositoryConnection $connection = NULL, FedoraApiSerializer $serializer = NULL) {
+  public function __construct(RepositoryConnection $connection = NULL, FedoraApiSerializer $serializer = NULL) {
     if (!$connection) {
       $connection = new RepositoryConnection();
     }
@@ -53,6 +52,7 @@ class FedoraApi {
 
     $this->connection = $connection;
   }
+
 }
 
 /**
@@ -138,13 +138,24 @@ class FedoraApiA {
     $response = $this->serializer->describeRepository($response);
     return $response;
   }
-  
-  public function getEventsFeed(){
-    $request = "/rss";
-    $seperator = '?';
-    $this->connection->addParam($request, $seperator, 'xml', 'true');
-    $response = $this->connection->getRequest($request);
-    return $response;
+
+  /**
+   * FCREPO4 exposes an events feed 
+   * @return string
+   *   an rss feed
+   * @throws Exception
+   *   if function is not supported
+   */
+  public function getEventsFeed() {
+    $info = $this->describeRepository();
+    if ($info['repositoryVersion'] >= 4.0) {
+      $request = "/rss";
+      $response = $this->connection->getRequest($request, NULL, NULL, 'application/rss+xml');
+      $response = $this->serializer->getEventsFeed($response);
+      return $response;
+    } else {
+      throw new Exception( 'Method not supported in versions earlier then 4.0');
+    }
   }
 
   /**
@@ -683,15 +694,14 @@ class FedoraApiM {
     $this->connection->addParamArray($request, $seperator, $params, 'checksum');
     $this->connection->addParamArray($request, $seperator, $params, 'mimeType');
     $this->connection->addParamArray($request, $seperator, $params, 'logMessage');
-     //pp changed this was a post
+    //pp changed this was a post
     $response = $this->connection->putRequest($request, $type, $file, $params['mimeType']);
-    
+
     //pp changed this as it was expecting xml but we have an array
     //$response = $this->serializer->addDatastream($response);
     return $response;
   }
-  
-  
+
   /**
    * FCREPO 4 has an addDatastreams end point where we can send multiple datastreams 
    * as part of a multi part POST request.  If any one of the datastreams cannot be 
@@ -701,22 +711,23 @@ class FedoraApiM {
    * @param array $datastreams
    *   the datastreams to add
    */
-  public function addDatastreams($pid, $datastreams){
-    $request = "/objects/$pid/datastreams"; 
-    $data = array();   
+  public function addDatastreams($pid, $datastreams) {
+    $request = "/objects/$pid/datastreams";
+    $data = array();
     $files = array();
-    foreach($datastreams as $datastream){
+    foreach ($datastreams as $datastream) {
       //$data_array = array();
-       if ($datastream->controlGroup == 'M' ) {  
-         $files[] = $datastream->content;
-         $data[ $datastream->id] =  '@' . $datastream->content ;
-       } else {
-         $data[ $datastream->id] =  $datastream->content ;  
-       }
+      if ($datastream->controlGroup == 'M') {
+        $files[] = $datastream->content;
+        $data[$datastream->id] = '@' . $datastream->content;
+      }
+      else {
+        $data[$datastream->id] = $datastream->content;
+      }
       //$data[ $datastream->id] = $data_array;
     }
     $response = $this->connection->postRequest($request, 'datastreams', $data);
-    foreach($files as $file){
+    foreach ($files as $file) {
       unlink($file);
     }
   }
@@ -1372,7 +1383,7 @@ class FedoraApiM {
    *   )
    *   @endcode
    */
-  public function validate($pid, $as_of_date_time=NULL){
+  public function validate($pid, $as_of_date_time = NULL) {
     $pid = urlencode($pid);
 
     $request = "/objects/{$pid}/validate";
@@ -1383,7 +1394,6 @@ class FedoraApiM {
     $response = $this->connection->getRequest($request);
     $response = $this->serializer->validate($response);
     return $response;
-
   }
 
   public function upload($file) {
@@ -1400,8 +1410,7 @@ class FedoraApiM {
 
     try {
       $response = $this->connection->postRequest($request, 'string', $uri);
-    }
-    catch (RepositoryException $e) {
+    } catch (RepositoryException $e) {
       // error
       return NULL;
     }

@@ -635,7 +635,7 @@ class CurlConnection extends HttpConnection {
       curl_setopt(self::$curlContext, CURLOPT_FILE, $file);
       curl_setopt(self::$curlContext, CURLOPT_HEADER, FALSE);
     }
-
+     
     $headers = array("Accept: $content_type");
     curl_setopt(self::$curlContext, CURLOPT_HTTPHEADER, $headers);
 
