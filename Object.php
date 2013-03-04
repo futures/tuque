@@ -315,8 +315,8 @@ abstract class AbstractFedoraObject extends AbstractObject {
         //pp changed for fcrepo4 as the label does not seem to get populated on ingest
         if(isset($this->objectProfile['objLabel'])){
           return $this->objectProfile['objLabel'];
-        } else {
-          return 'no label';
+       } else {
+          return $this->id;
         }
         
         break;
