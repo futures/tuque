@@ -157,7 +157,7 @@ class RepositoryQuery {
 
       // Map the name to the value in the array.
       $r['object'] = $val;
-      $r['title']  = array('type' => 'literal','value'=>'no label');
+      $r['title']  = array('type' => 'literal','value'=> $result->$column);
       $r['content']  = array('type' => 'literal','value'=>'this should be the cmodel');
       // Add the single result to the set to return.
       $results[] = $r;

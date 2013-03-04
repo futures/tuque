@@ -138,6 +138,14 @@ class FedoraApiA {
     $response = $this->serializer->describeRepository($response);
     return $response;
   }
+  
+  public function getEventsFeed(){
+    $request = "/rss";
+    $seperator = '?';
+    $this->connection->addParam($request, $seperator, 'xml', 'true');
+    $response = $this->connection->getRequest($request);
+    return $response;
+  }
 
   /**
    * Query fedora to return a list of objects.
