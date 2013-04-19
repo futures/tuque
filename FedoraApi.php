@@ -138,6 +138,22 @@ class FedoraApiA {
     $response = $this->serializer->describeRepository($response);
     return $response;
   }
+  
+  /**
+   * returns the version of the Fedora repository.  Useful for determining what 
+   * functions/properties could be available
+   * @staticvar type $version
+   * @return string
+   *   usually a number
+   */
+  public function getRepositoryVersion(){
+    static $version;
+    if(empty($version)){
+       $info = $this->describeRepository();
+       $version = $info['repositoryVersion'];
+    }
+    return $version;
+  }
 
   /**
    * FCREPO4 exposes an events feed 
@@ -147,8 +163,8 @@ class FedoraApiA {
    *   if function is not supported
    */
   public function getEventsFeed() {
-    $info = $this->describeRepository();
-    if ($info['repositoryVersion'] >= 4.0) {
+    $version  = $this->getRepositoryVersion();
+    if ($version >= 4.0) {
       $request = "/rss";
       $response = $this->connection->getRequest($request, NULL, NULL, 'application/rss+xml');
       $response = $this->serializer->getEventsFeed($response);
@@ -929,6 +945,9 @@ class FedoraApiM {
    * @see FedoraApiM::getDatastream
    */
   public function getDatastreamHistory($pid, $dsid) {
+    //pp changed history not supported in fcrepo 4
+    //would like to to a repository version check here 
+    return array();
     $pid = urlencode($pid);
     $dsid = urlencode($dsid);
 

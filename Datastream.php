@@ -973,6 +973,16 @@ abstract class AbstractExistingFedoraDatastream extends AbstractFedoraDatastream
   }
 
   /**
+   * Wrapper around the APIM getDatastream function.
+   *
+   * @return array
+   *   Array containing datastream info.
+   */
+  protected function getDatastream() {
+    return $this->repository->api->m->getDatastream($this->parent->id, $this->id);
+  }
+
+  /**
    * Wrapper around the APIM modifyDatastream function.
    *
    * @param array $args
@@ -1228,8 +1238,15 @@ class FedoraDatastream extends AbstractExistingFedoraDatastream implements Count
    * This populates datastream history if it needs to be populated.
    */
   protected function populateDatastreamHistory() {
+    //pp changed this for fcrepo4
     if ($this->datastreamHistory === NULL) {
-      $this->datastreamHistory = $this->getDatastreamHistory();
+      $repositoryVersion = $this->repository->api->a->getRepositoryVersion();
+      if ($repositoryVersion >= 4.0) {
+        $this->datastreamHistory = array($this->getDatastream());
+      }
+      else {
+        $this->datastreamHistory = $this->getDatastreamHistory();
+      }
     }
   }
 
@@ -1237,8 +1254,15 @@ class FedoraDatastream extends AbstractExistingFedoraDatastream implements Count
    * This function uses datastream history to populate datastream info.
    */
   protected function populateDatastreamInfo() {
-    //pp changed this
-    $this->datastreamHistory = $this->getDatastreamHistory();
+    //pp changed this for fcrepo4 which currently does not support the datastream history call
+    $repositoryVersion = $this->repository->api->a->getRepositoryVersion();
+    if ($repositoryVersion >= 4.0) {
+      $this->datastreamHistory = array($this->getDatastream());
+    }
+    else {
+      $this->datastreamHistory = $this->getDatastreamHistory();
+    }
+
     if (isset($this->datastreamHistory[0])) {
       $this->datastreamInfo = $this->datastreamHistory[0];
     }

@@ -648,7 +648,7 @@ class FedoraObject extends AbstractFedoraObject {
    * this will populate the datastream list the first time it is needed.
    */
   protected function populateDatastreams() {
-    if (!isset($this->datastreams)) {
+    if (!isset($this->datastreams) || empty($this->datastreams)) {
       $datastreams = $this->repository->api->a->listDatastreams($this->id);
       $this->datastreams = array();
       foreach ($datastreams as $key => $value) {

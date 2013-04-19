@@ -184,10 +184,10 @@ class FedoraRepository extends AbstractRepository {
       $dstream->state = $ds->state;
       $dstream->mimetype = $ds->mimetype;
       $dstream->format = $ds->format;
-      //$dstream->size = $ds->size;
-      //$dstream->checksum = $ds->checksum; // maybe recalculate this
+      $dstream->size = $ds->size;
+     
       $dstream->checksumType = $ds->checksumType;
-      //$dstream->createdDate = $ds->createdDate; // what about this one
+      $dstream->createdDate = $ds->createdDate; // what about this one
       //$dstream->content = $ds->content; // this is probably wrong, so lets skip it
 
       // now fetch the content depending on the controlGroup of the original datastream
