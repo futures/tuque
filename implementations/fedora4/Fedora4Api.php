@@ -37,4 +37,17 @@ class Fedora4Api {
     $return = json_decode($response['content'], TRUE);
     return $return['repositories'];
   }
+
+  public function getAllObjects() {
+    $request = "/objects";
+    $response = $this->connection->getRequest($this->createUrl($request), array('headers' => array('Accept: application/json')));
+    $return = json_decode($response['content'], TRUE);
+    return $return;
+  }
+
+  public function getNewObject() {
+    $request = "/objects/new";
+    $response = $this->connection->postRequest($this->createUrl($request));
+    return $response['content'];
+  }
 }
