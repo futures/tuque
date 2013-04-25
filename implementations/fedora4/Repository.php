@@ -5,6 +5,7 @@
  * defines a concrete implementation for Fedora.
  */
 
+require_once "AbstractRepository.php";
 require_once "implementations/fedora4/Object.php";
 
 /**
@@ -54,10 +55,11 @@ class FedoraRepository extends AbstractRepository {
   /**
    * @todo validate the ID
    * @todo catch the getNextPid errors
+   * @todo implement create_uuid
    *
    * @see AbstractRepository::constructObject
    */
-  public function constructObject($id = NULL) {
+  public function constructObject($id = NULL, $create_uuid = FALSE) {
     $exploded = explode(':', $id);
     if (!$id) {
       $id = $this->api->m->getNextPid();
@@ -85,7 +87,7 @@ class FedoraRepository extends AbstractRepository {
     //pp changed the below as they crashed on fcrepo4 always had two models only fedora:object and fedora:owned
     //$fedora_object->owner = $object->owner;
     //$fedora_object->models = $object->models;
-    $info = $this->api->a->describeRepository();
+    //$info = $this->api->a->describeRepository();
 
     $datastreams = array();
     // now we have an empty fedora object with pid=$id
@@ -122,17 +124,9 @@ class FedoraRepository extends AbstractRepository {
       else if ($ds->controlGroup == 'E' || $ds->controlGroup == 'R') {
         $dstream->url = $ds->url;
       }
-      if($info['repositoryVersion'] < 4.0){
-       //attach the datastream to the object
-        $fedora_object->ingestDatastream($dstream);
-      } else {
-        $datastreams["$ds->id"] = $dstream;
-      }
-
+      $datastreams["$ds->id"] = $dstream;
     }
-    if($info['repositoryVersion'] >= 4.0){
-      $response = $this->api->m->addDatastreams($id, $datastreams);
-    }
+    //$response = $this->api->m->addDatastreams($id, $datastreams);
     $object = $fedora_object;
     $this->cache->set($id, $object);
     return $object;
@@ -176,5 +170,11 @@ class FedoraRepository extends AbstractRepository {
     }
     //pp changed this return success
     return TRUE;
+  }
+
+  /**
+   * @todo implement this.
+   */
+  public function getNextIdentifier($namespace = NULL, $create_uuid = FALSE, $number_of_identifiers = 1) {
   }
 }

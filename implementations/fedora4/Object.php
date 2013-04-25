@@ -5,6 +5,7 @@
  * This file contains all of the functionality for objects in the repository.
  */
 require_once 'MagicProperty.php';
+require_once 'AbstractObject.php';
 require_once 'implementations/fedora3/FedoraDate.php';
 require_once 'implementations/fedora4/Datastream.php';
 require_once 'implementations/fedora3/FedoraRelationships.php';

@@ -1,6 +1,6 @@
 <?php
 
-require_once 'implementations/fedora4/Fedora4Api.php';
+require_once 'implementations/fedora4/experimental/Fedora4Api.php';
 
 class FedoraApi4Test extends PHPUnit_Framework_TestCase {
   protected $pids = array();
@@ -32,5 +32,5 @@ class FedoraApi4Test extends PHPUnit_Framework_TestCase {
     $this->assertTrue(count($response) > 0);
   }
 
-  
+
 }

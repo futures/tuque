@@ -7,6 +7,7 @@
  */
 require_once 'MagicProperty.php';
 require_once 'implementations/fedora3/FedoraDate.php';
+require_once 'AbstractDatastream.php';
 
 /**
  * Abstract base class implementing a datastream in Fedora.
