@@ -5,6 +5,8 @@
  * defines a concrete implementation for Fedora.
  */
 
+include_once "MagicProperty.php";
+
 /**
  * An abstract repository interface.
  *
