@@ -128,7 +128,7 @@ class FedoraRepository extends AbstractRepository {
     $this->cache = $cache;
     $this->ri = new $this->queryClass($this->api->connection);
   }
-
+  
   /**
    * @see AbstractRepository::findObjects
    * @todo this needs to be implemented!
@@ -152,6 +152,64 @@ class FedoraRepository extends AbstractRepository {
     }
     return new $this->newObjectClass($id, $this);
   }
+  
+  /**
+   *  @todo validate the ID
+   *  @todo catch the getNextPid errors
+   *
+   *  @see AbstractRepository::getNextIdentifier
+   */
+  public function getNextIdentifier($namespace = NULL, $create_uuid = FALSE, $number_of_identifiers = 1) {
+    $pids = array();
+
+    if ($create_uuid) {
+      if (is_null($namespace)) {
+        $repository_info = $this->api->a->describeRepository();
+        $namespace = $repository_info['repositoryPID']['PID-namespaceIdentifier'];
+      }
+      if ($number_of_identifiers > 1) {
+        for ($i = 1; $i <= $number_of_identifiers; $i++) {
+          $pids[] = $namespace . ':' . $this->getUuid();
+        }
+      }
+      else {
+        $pids = $namespace . ':' . $this->getUuid();
+      }
+    }
+    else {
+      $pids = $this->api->m->getNextPid($namespace, $number_of_identifiers);
+    }
+
+    return $pids;
+  }
+  
+   /**
+   * This method will return a valid UUID based on V4 methods.
+   *
+   * @return string
+   *   A valid V4 UUID.
+   */
+  protected function getUuid() {
+    $bytes = openssl_random_pseudo_bytes(2);
+    $add_mask = $this->convertHexToBin('4000');
+    $negate_mask = $this->convertHexToBin('C000');
+    // Make start with 11.
+    $manipulated_bytes = $bytes | $negate_mask;
+    // Make start with 01.
+    $manipulated_bytes = $manipulated_bytes ^ $add_mask;
+    $hex_string_10 = bin2hex($manipulated_bytes);
+
+    return sprintf('%08s-%04s-4%03s-%s-%012s',
+      bin2hex(openssl_random_pseudo_bytes(4)),
+      bin2hex(openssl_random_pseudo_bytes(2)),
+      // Four most significant bits holds version number 4.
+      substr(bin2hex(openssl_random_pseudo_bytes(2)), 1),
+      // Two most significant bits holds zero and one for variant DCE1.1
+      $hex_string_10,
+      bin2hex(openssl_random_pseudo_bytes(6))
+    );
+  }
+
 
   /**
    * @see AbstractRepository::ingestObject()
