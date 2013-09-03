@@ -8,6 +8,7 @@
 /**
  * A class to Serialize the XML responses from Fedora into PHP arrays.
  */
+set_include_path("sites/all/libraries/tuque/");
 class Fedora4ApiSerializer {
 
   /**
@@ -430,14 +431,16 @@ class Fedora4ApiSerializer {
       $object['datastreams'] = array();
       foreach ((array) $object['hasChild'] as $id) {
         $child = $this->getNodeProperties($id, $response);
-        if (in_array('fedora:datastream', $child['mixinTypes'])) {
-          if (isset($child['hasContent'])) {
-            $child['content'] = $this->getNodeProperties($child['hasContent'], $response);
+        if (isset($child['mixinTypes'])) {
+          if (in_array('fedora:datastream', $child['mixinTypes'])) {
+            if (isset($child['hasContent'])) {
+              $child['content'] = $this->getNodeProperties($child['hasContent'], $response);
+            }
+            $object['datastreams'][$id] = $child;
           }
-          $object['datastreams'][$id] = $child;
-        }
-        else {
-          $object['children'][$id] = $child;
+          else {
+            $object['children'][$id] = $child;
+          }
         }
       }
     }

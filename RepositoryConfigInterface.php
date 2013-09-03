@@ -8,6 +8,7 @@
 /**
  * The general interface for a RepositoryConfig object.
  */
+set_include_path("sites/all/libraries/tuque/");
 interface RepositoryConfigInterface {
   /**
    * Simple constructor defintion for the repository

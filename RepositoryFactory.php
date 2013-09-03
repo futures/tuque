@@ -1,6 +1,7 @@
 <?php
 
 // Fedora 3 includes.
+set_include_path("sites/all/libraries/tuque/");
 require_once 'implementations/fedora3/Datastream.php';
 require_once 'implementations/fedora3/FedoraApi.php';
 require_once 'implementations/fedora3/FedoraApiSerializer.php';

@@ -10,6 +10,7 @@
  *
  * This can be used to override the implementation of the Repository.
  */
+set_include_path("sites/all/libraries/tuque/");
 abstract class AbstractRepository extends MagicProperty {
 
   /**

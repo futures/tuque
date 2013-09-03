@@ -17,6 +17,7 @@
  *   The array containing: status, headers, and content of the HTTP request
  *   causing the error. This is only set if there was a HTTP response sent.
  */
+set_include_path("sites/all/libraries/tuque/");
 class HttpConnectionException extends Exception {
 
   protected $response;
@@ -491,40 +492,52 @@ class CurlConnection extends HttpConnection {
    * @see HttpConnection::postRequest
    */
   public function postRequest($url, $type = 'none', $data = NULL, $content_type = NULL, $options = array()) {
+    $this->unallocateCurlContext();
     $this->setupCurlContext($url);
     //curl_setopt(self::$curlContext, CURLOPT_CUSTOMREQUEST, 'POST');
     //curl_setopt(self::$curlContext, CURLOPT_POST, TRUE);
     if (isset($options['headers'])) {
       //      curl_setopt(self::$curlContext, CURLOPT_HTTPHEADER, $options['headers']);
     }
+
     $temp = tempnam(sys_get_temp_dir(), 'tuque');
     file_put_contents($temp, $data);
     $fp = fopen($temp, 'r');
-    dsm($type, 'type');
-
-        if ($content_type) {
-          $headers = array("Content-Type: $content_type");
-        }
-        else {
-          $headers = array("Content-Type: text/plain");
-        }
-        if (isset($options['headers'])) {
-          $headers = array_merge($headers, $options['headers']);
-        }
-
+    if (strcasecmp($type, 'file')==0)
+    {
+      $fp =  fopen($data, 'r');
+      if(isset($options['mimeType']))
+      {
+        $content_type=$options['mimeType'];
+      }
+    }
+    
+    if ($content_type) {
+      $headers = array("Content-Type: $content_type");
+    }
+    else {
+      $headers = array("Content-Type: text/plain");
+    }
+    if (isset($options['headers'])) {
+      $headers = array_merge($headers, $options['headers']);
+    }
     switch (strtolower($type)) {
       case 'string':
-        //curl_setopt(self::$curlContext, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt(self::$curlContext, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt(self::$curlContext, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt(self::$curlContext, CURLOPT_POST, TRUE);
         curl_setopt(self::$curlContext, CURLOPT_UPLOAD, 1);
         curl_setopt(self::$curlContext, CURLOPT_INFILE, $fp);
         curl_setopt(self::$curlContext, CURLOPT_INFILESIZE, filesize($temp));
         break;
 
       case 'file':
-        //        curl_setopt(self::$curlContext, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt(self::$curlContext, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt(self::$curlContext, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt(self::$curlContext, CURLOPT_POST, TRUE);
         curl_setopt(self::$curlContext, CURLOPT_UPLOAD, 1);
         curl_setopt(self::$curlContext, CURLOPT_INFILE, $fp);
-        curl_setopt(self::$curlContext, CURLOPT_INFILESIZE, filesize($temp));
+        curl_setopt(self::$curlContext, CURLOPT_INFILESIZE, filesize($data));
         /*
         if ($content_type) {
           curl_setopt(self::$curlContext, CURLOPT_POSTFIELDS, array('file' => "@$data;type=$content_type"));
@@ -545,7 +558,6 @@ class CurlConnection extends HttpConnection {
     }
 
 
-    dsm(curl_getinfo(self::$curlContext));
     // Ugly substitute for a try catch finally block.
     $exception = NULL;
     try {
@@ -568,7 +580,6 @@ class CurlConnection extends HttpConnection {
     if ($exception) {
       throw $exception;
     }
-
     return $results;
   }
 
@@ -650,11 +661,13 @@ class CurlConnection extends HttpConnection {
     if ($stdout === NULL) {
       $stdout = fopen('php://stdout', 'w');
     }
+    $this->unallocateCurlContext();
     $this->setupCurlContext($url);
-
+    
     if (isset($options['headers_only']) && $options['headers_only'] === TRUE) {
       curl_setopt(self::$curlContext, CURLOPT_NOBODY, TRUE);
       curl_setopt(self::$curlContext, CURLOPT_HEADER, TRUE);
+      
     } else {
       curl_setopt(self::$curlContext, CURLOPT_CUSTOMREQUEST, 'GET');
       curl_setopt(self::$curlContext, CURLOPT_HTTPGET, TRUE);
@@ -667,8 +680,9 @@ class CurlConnection extends HttpConnection {
     }
     else {
       $file = NULL;
+      //curl_setopt(self::$curlContext, CURLOPT_INFILE, STDIN);
     }
-
+    
     if (isset($options['headers'])) {
       curl_setopt(self::$curlContext, CURLOPT_HTTPHEADER, $options['headers']);
     }
@@ -676,6 +690,9 @@ class CurlConnection extends HttpConnection {
     // Ugly substitute for a try catch finally block.
     $exception = NULL;
     try {
+      curl_setopt(self::$curlContext, CURLOPT_CUSTOMREQUEST, 'GET');
+      curl_setopt(self::$curlContext, CURLOPT_HTTPGET, TRUE);
+      curl_setopt(self::$curlContext, CURLOPT_PUT, FALSE);
       $results = $this->doCurlRequest($file);
     } catch (HttpConnectionException $e) {
       $exception = $e;
@@ -706,8 +723,8 @@ class CurlConnection extends HttpConnection {
    * @see HttpConnection::deleteRequest
    */
   function deleteRequest($url) {
+    $this->unallocateCurlContext($url);
     $this->setupCurlContext($url);
-
     curl_setopt(self::$curlContext, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
     // Ugly substitute for a try catch finally block.

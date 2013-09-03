@@ -4,6 +4,7 @@
  * @file
  * This file contains all of the functionality for objects in the repository.
  */
+set_include_path("sites/all/libraries/tuque/");
 require_once 'MagicProperty.php';
 
 /**

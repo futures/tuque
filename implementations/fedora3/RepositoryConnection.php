@@ -3,7 +3,7 @@
  * @file
  * This file contains the implementation of a connection to Fedora.
  */
-
+set_include_path("sites/all/libraries/tuque/");
 require_once 'RepositoryConfigInterface.php';
 require_once 'HttpConnection.php';
 require_once 'RepositoryException.php';

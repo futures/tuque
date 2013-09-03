@@ -10,6 +10,7 @@
  * Simple abstract Cache defintion providing basic key value caching
  * functionality.
  */
+set_include_path("sites/all/libraries/tuque/");
 abstract class AbstractCache {
   /**
    * Add data to the cache.

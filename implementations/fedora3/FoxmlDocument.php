@@ -1,5 +1,5 @@
 <?php
-
+set_include_path("sites/all/libraries/tuque/");
 class FoxmlDocument extends DOMDocument {
   const FOXML = 'info:fedora/fedora-system:def/foxml#';
   const xlink = 'http://www.w3.org/1999/xlink';

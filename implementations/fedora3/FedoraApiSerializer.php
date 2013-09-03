@@ -8,6 +8,7 @@
 /**
  * A class to Serialize the XML responses from Fedora into PHP arrays.
  */
+set_include_path("sites/all/libraries/tuque/");
 class FedoraApiSerializer {
 
   /**

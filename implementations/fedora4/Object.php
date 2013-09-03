@@ -512,7 +512,6 @@ class FedoraObject extends AbstractFedoraObject {
    */
   public function refresh() {
     $this->objectProfile = $this->repository->api->a->getObjectProfile($this->id);
-    print_r( $this->objectProfile);
     $this->objectProfile['objCreateDate'] = new FedoraDate($this->objectProfile['objCreateDate']);
     $this->objectProfile['objLastModDate'] = new FedoraDate($this->objectProfile['objLastModDate']);
     $this->objectProfile['objLogMessage'] = '';

@@ -8,7 +8,7 @@
  * SOAP interface. If there are version specific modifications to be made for
  * Fedora, this is the place to make them.
  */
-
+set_include_path("sites/all/libraries/tuque/");
 require_once 'RepositoryException.php';
 require_once 'implementations/fedora3/RepositoryConnection.php';
 

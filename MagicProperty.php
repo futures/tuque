@@ -39,6 +39,7 @@
  * print($test->myExample);
  * @endcode
  */
+set_include_path("sites/all/libraries/tuque/");
 abstract class MagicProperty {
 
   /**

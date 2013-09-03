@@ -8,6 +8,7 @@
 /**
  * The top level exception for the Islandora Fedora API
  */
+set_include_path("sites/all/libraries/tuque/");
 class RepositoryException extends Exception {}
 
 /**

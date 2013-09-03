@@ -5,6 +5,7 @@
  * This file defines all the classes used to manipulate datastreams in the
  * repository.
  */
+set_include_path("sites/all/libraries/tuque/");
 require_once 'MagicProperty.php';
 
 /**
