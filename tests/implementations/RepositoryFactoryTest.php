@@ -5,7 +5,7 @@
  * Test that the Repository Factory will load the correct implementation.
  */
 
-use Tuque\RepositoryFactory;
+use Tuque\RepositoryFactory, Tuque\RepositoryConfig;
 
 require_once 'implementations/RepositoryFactory.php';
 

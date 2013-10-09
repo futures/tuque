@@ -7,7 +7,7 @@
 
 namespace Tuque;
 use Tuque\Fedora\v3 as Fedora3;
-use RepositoryConfig, InvalidArgumentException, SimpleXMLElement;
+use InvalidArgumentException, SimpleXMLElement;
 
 require_once __DIR__ . '/../AbstractRepository.php';
 
