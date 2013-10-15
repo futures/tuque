@@ -7,8 +7,6 @@
 
 use Tuque\RepositoryFactory, Tuque\RepositoryConfig;
 
-require_once 'implementations/RepositoryFactory.php';
-
 class RepositoryFactoryTest extends PHPUnit_Framework_TestCase {
 
   function testDescribeFedora3() {

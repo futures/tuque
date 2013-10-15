@@ -40,7 +40,7 @@ require_once 'FedoraRelationships.php';
  *
  * @endcode
  */
-abstract class AbstractObject extends MagicProperty implements Countable, ArrayAccess, IteratorAggregate {
+abstract class AbstractObject extends MagicProperty implements \AbstractObject {
 
   /**
    * The label for this object. Fedora limits the label to be 255 characters.
@@ -225,7 +225,7 @@ abstract class AbstractFedoraObject extends AbstractObject {
   /**
    * Constructosaurus.
    */
-  public function __construct($id, FedoraRepository $repository) {
+  public function __construct($id, \AbstractRepository $repository) {
     parent::__construct();
     $this->repository = $repository;
     $this->objectId = $id;
@@ -469,7 +469,7 @@ class NewFedoraObject extends AbstractFedoraObject {
   /**
    * Constructoman!
    */
-  public function __construct($id, FedoraRepository $repository) {
+  public function __construct($id, \AbstractRepository $repository) {
     parent::__construct($id, $repository);
     $this->objectProfile = array();
     $this->objectProfile['objState'] = 'A';
@@ -518,7 +518,7 @@ class NewFedoraObject extends AbstractFedoraObject {
    * This is necessary to avoid the possibility of changing a datastream for
    * another object, when copying datastreams between objects.
    */
-  private function createNewDatastreamCopy(AbstractFedoraDatastream &$datastream) {
+  private function createNewDatastreamCopy(\AbstractDatastream &$datastream) {
     $old_datastream = $datastream;
 
     $datastream = $this->constructDatastream($old_datastream->id, $old_datastream->controlGroup);
@@ -668,7 +668,7 @@ class FedoraObject extends AbstractFedoraObject {
   /**
    * The class constructor. Should be instantiated by the repository.
    */
-  public function __construct($id, FedoraRepository $repository) {
+  public function __construct($id, \AbstractRepository $repository) {
     parent::__construct($id, $repository);
     $this->refresh();
   }

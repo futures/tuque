@@ -2,8 +2,6 @@
 
 use Tuque\SimpleCache;
 
-require_once "includes/SimpleCache.php";
-
 class SimpleCacheTest extends PHPUnit_Framework_TestCase {
 
   function testAdd() {

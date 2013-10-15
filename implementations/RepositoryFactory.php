@@ -9,8 +9,6 @@ namespace Tuque;
 use Tuque\Fedora\v3 as Fedora3;
 use InvalidArgumentException, SimpleXMLElement;
 
-require_once __DIR__ . '/../AbstractRepository.php';
-
 class RepositoryFactory {
 
   /**
@@ -108,15 +106,6 @@ class RepositoryFactory {
    *   The Fedora 3 repository implementation.
    */
   protected static function getRepositoryFedora3(RepositoryConfig $config) {
-    require_once 'fedora3/Datastream.php';
-    require_once 'fedora3/FedoraApi.php';
-    require_once 'fedora3/FedoraApiSerializer.php';
-    require_once 'fedora3/Object.php';
-    require_once 'fedora3/RepositoryConnection.php';
-    require_once 'fedora3/RepositoryException.php';
-    require_once 'fedora3/RepositoryQuery.php';
-    require_once 'fedora3/Repository.php';
-    require_once 'fedora3/FedoraRelationships.php';
     $connection = new Fedora3\RepositoryConnection($config->getURL(), $config->getUsername(), $config->getPassword());
     $connection->reuseConnection = TRUE;
     $api = new Fedora3\FedoraApi($connection);

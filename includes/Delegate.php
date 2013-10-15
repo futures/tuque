@@ -6,8 +6,9 @@
  */
 
 namespace Tuque;
+use \InvalidArgumentException;
 
-class Decorator {
+class Delegate {
 
   /**
    * This is the delegate being decorated.
@@ -22,7 +23,20 @@ class Decorator {
    *   The delegate that is being decorated.
    */
   public function __construct($delegate) {
+    if (!is_object($delegate)) {
+      throw new InvalidArgumentException('Argument 1 to Tuque\Delegate must be a object.');
+    }
     $this->delegate = $delegate;
+  }
+
+  /**
+   * Get the object this class delegates to.
+   *
+   * @return object
+   *   The object this class delegates to.
+   */
+  public function &getDelegate() {
+    return $this->delegate;
   }
 
   /**
@@ -67,6 +81,17 @@ class Decorator {
    * @see http://php.net/manual/en/language.oop5.overloading.php
    */
   public function __call($method, $arguments) {
+    return call_user_func_array(array($this->delegate, $method), $arguments);
+  }
+
+  /**
+   * Call the given method of the delegate. Supports pass by reference.
+   *
+   * __call() does not support pass by reference.
+   *
+   * @see http://php.net/manual/en/language.oop5.overloading.php
+   */
+  public function callPassByReference($method, array $arguments) {
     return call_user_func_array(array($this->delegate, $method), $arguments);
   }
 

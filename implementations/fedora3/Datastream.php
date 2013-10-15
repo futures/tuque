@@ -15,7 +15,7 @@ require_once 'FedoraDate.php';
 /**
  * This abstract class can be overriden by anything implementing a datastream.
  */
-abstract class AbstractDatastream extends MagicProperty {
+abstract class AbstractDatastream extends MagicProperty implements \AbstractDatastream {
 
   /**
    * This will set the state of the datastream to deleted.
@@ -239,7 +239,7 @@ abstract class AbstractFedoraDatastream extends AbstractDatastream {
    * @param string $id
    *   The identifier of the datastream.
    */
-  public function __construct($id, AbstractFedoraObject $object, FedoraRepository $repository) {
+  public function __construct($id, \AbstractObject $object, \AbstractRepository $repository) {
     parent::__construct();
     $this->datastreamId = $id;
     $this->parent = $object;
@@ -438,7 +438,7 @@ class NewFedoraDatastream extends AbstractFedoraDatastream {
    *
    * @todo test for valid identifiers. it can't start with a number etc.
    */
-  public function __construct($id, $control_group, AbstractFedoraObject $object, FedoraRepository $repository) {
+  public function __construct($id, $control_group, \AbstractObject $object, \AbstractRepository $repository) {
     parent::__construct($id, $object, $repository);
 
     $group = $this->validateControlGroup($control_group);
@@ -927,7 +927,7 @@ abstract class AbstractExistingFedoraDatastream extends AbstractFedoraDatastream
    * @param FedoraRepository $repository
    *   The FedoraRepository that this DS belongs to.
    */
-  public function __construct($id, FedoraObject $object, FedoraRepository $repository) {
+  public function __construct($id, \AbstractObject $object, \AbstractRepository $repository) {
     parent::__construct($id, $object, $repository);
   }
 
@@ -1000,7 +1000,7 @@ class FedoraDatastreamVersion extends AbstractExistingFedoraDatastream {
   /**
    * The Constructor! Sounds like a superhero doesn't it. Constructor away!
    */
-  public function __construct($id, array $datastream_info, FedoraDatastream $datastream, FedoraObject $object, FedoraRepository $repository) {
+  public function __construct($id, array $datastream_info, \AbstractDatastream $datastream, \AbstractObject $object, \AbstractRepository $repository) {
     parent::__construct($id, $object, $repository);
     $this->datastreamInfo = $datastream_info;
     $this->parent = $object;
@@ -1204,7 +1204,7 @@ class FedoraDatastream extends AbstractExistingFedoraDatastream implements Count
   /**
    * Domo arigato, Mr. Roboto. Constructor.
    */
-  public function __construct($id, FedoraObject $object, FedoraRepository $repository, array $datastream_info = NULL) {
+  public function __construct($id, \AbstractObject $object, \AbstractRepository $repository, array $datastream_info = NULL) {
     parent::__construct($id, $object, $repository);
     $this->datastreamInfo = $datastream_info;
   }

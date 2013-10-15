@@ -127,9 +127,8 @@ namespace {
 
   }
 }
+
 namespace Tuque {
-  require_once __DIR__ . '/includes/Decorator.php';
-  require_once __DIR__ . '/includes/SimpleCache.php';
 
   /**
    * Defines the properties required to make a connection with a Repository.
@@ -184,7 +183,7 @@ namespace Tuque {
   /**
    * This class acts as a wrapper for the actual Repository implementation.
    */
-  class Repository extends Decorator implements \AbstractRepository {
+  class Repository extends Delegate implements \AbstractRepository {
 
     /**
      * The decorator class to wrap the objects that have not yet been ingested.
@@ -199,15 +198,20 @@ namespace Tuque {
     protected $objectDecorator = 'Tuque\Object';
 
     /**
+     * Creates a repository from the given configuration.
+     */
+    public static function fromConfig(RepositoryConfig $config) {
+      return new Repository(RepositoryFactory::getRepository($config));
+    }
+
+    /**
      * Constructor for the Repository object.
      *
-     * @param RepositoryConfig $config
-     *   The configuration setting that defines what kind of repository to
-     *   instantiate.
+     * @param AbstractRepository $repository
+     *   The repository object to wrap.
      */
-    public function __construct(RepositoryConfig $config) {
-      require_once 'implementations/RepositoryFactory.php';
-      parent::__construct(RepositoryFactory::getRepository($config));
+    public function __construct(\AbstractRepository $repository) {
+      parent::__construct($repository);
     }
 
     /**
@@ -225,9 +229,10 @@ namespace Tuque {
      *
      * @see AbstractRepository::ingestObject
      */
-    public function ingestObject(AbstractObject &$object) {
-      $object = parent::ingestObject($object);
-      return new $this->objectDecorator($object);
+    public function ingestObject(\AbstractObject &$object) {
+      $object = $this->callPassByReference(__FUNCTION__, array(&$object));
+      $object = new $this->objectDecorator($object);
+      return $object;
     }
 
     /**
@@ -265,6 +270,15 @@ namespace Tuque {
      */
     public function getNextIdentifier($namespace = NULL, $create_uuid = FALSE, $number_of_identifiers = 1) {
       return parent::getNextIdentifier($namespace, $create_uuid, $number_of_identifiers);
+    }
+
+    /**
+     * Returns a string that describes the object.
+     */
+    public function __toString() {
+      $class = get_class($this);
+      $delegate = get_class($this->getDelegate());
+      return "Class: {$class}\nDelegate: {$delegate}\n";
     }
   }
 }

@@ -18,7 +18,7 @@ class FoxmlDocument extends DOMDocument {
   protected $root;
   protected $object;
 
-  public function __construct(NewFedoraObject $object) {
+  public function __construct(\AbstractObject $object) {
     parent::__construct("1.0", "UTF-8"); // DomDocument
     $this->formatOutput = TRUE;
     $this->preserveWhiteSpace = FALSE;

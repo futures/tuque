@@ -2,8 +2,6 @@
 
 use Tuque\Fedora\v3\FedoraDate;
 
-require_once "implementations/fedora3/FedoraDate.php";
-
 class FedoraDateTest extends PHPUnit_Framework_TestCase {
 
   function testToString() {

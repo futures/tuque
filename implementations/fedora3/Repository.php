@@ -6,7 +6,8 @@
  */
 
 namespace Tuque\Fedora\v3;
-use Tuque\AbstractCache as AbstractCache;
+use Tuque\AbstractCache as AbstractCache,
+  InvalidArgumentException;
 
 require_once "RepositoryQuery.php";
 require_once "FoxmlDocument.php";
@@ -17,7 +18,7 @@ require_once "Object.php";
  *
  * This can be used to override the implementation of the Repository.
  */
-abstract class AbstractRepository extends MagicProperty {
+abstract class AbstractRepository extends MagicProperty implements \AbstractRepository {
 
   /**
    * This method is a factory that will return a new repositoryobject object
@@ -50,7 +51,7 @@ abstract class AbstractRepository extends MagicProperty {
    * @return AbstractObject
    *   The ingested abstract object.
    */
-  abstract public function ingestObject(NewFedoraObject &$object);
+  abstract public function ingestObject(\AbstractObject &$object);
 
   /**
    * Gets a object from the repository.
@@ -282,7 +283,7 @@ class FedoraRepository extends AbstractRepository {
    * @see AbstractRepository::ingestObject()
    * @todo error handling
    */
-  public function ingestObject(NewFedoraObject &$object) {
+  public function ingestObject(\AbstractObject &$object) {
     // We want all the managed datastreams to be uploaded.
     foreach ($object as $ds) {
       if ($ds->controlGroup == 'M') {
@@ -340,5 +341,19 @@ class FedoraRepository extends AbstractRepository {
       // @todo chain exceptions here.
       throw $e;
     }
+  }
+
+  /**
+   * Describes this repository.
+   *
+   * @see AbstractRepository::describe
+   */
+  public function describe() {
+    $info = $this->api->a->describeRepository();
+    // If we are able to successfully call API-M::getDatastream, assume we are
+    // an authenticated user, as API-M is usally locked down.
+    $dc = $this->api->m->getDatastream('fedora-system:ContentModel-3.0', 'DC');
+    $info['authenticated'] = $dc !== NULL;
+    return $info;
   }
 }
